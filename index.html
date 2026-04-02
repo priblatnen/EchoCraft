@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Пантеон Древних | Кейсы, Донаты, Титулы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Garamond', 'Palatino', system-ui;
+        }
+        body {
+            background: #f5f3ef;
+            color: #2c2418;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #a8d8ff;
+            font-size: 1.2em;
+            user-select: none;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); opacity: 0.3; }
+        }
+        .hero {
+            background: linear-gradient(135deg, #2c2b26 0%, #1f1d18 100%);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, #f5e2a4, #c4923a, #efcf74);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            color: #d4c9a8;
+            margin-top: 0.5rem;
+        }
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            background: #fffef7;
+            padding: 0.8rem;
+            border-bottom: 1px solid #e0d6c0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #5e4a2a;
+            cursor: pointer;
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+            transition: 0.3s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: #e6dcc0;
+            color: #3d2e16;
+        }
+        .section {
+            display: none;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+        .section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .shulker-bg {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.08"><polygon points="20,30 40,20 60,30 60,50 40,60 20,50" fill="%23926734"/><rect x="35" y="35" width="10" height="10" fill="%23b57c1c"/></svg>');
+            background-repeat: repeat;
+            border-radius: 2rem;
+            padding: 1.5rem;
+        }
+        .roulette-wheel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .reward-item {
+            background: #fffaf0;
+            border-radius: 1.2rem;
+            padding: 12px 8px;
+            width: 110px;
+            text-align: center;
+            border: 1px solid #d4b87a;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+        .reward-item.active-highlight {
+            background: #ffe4a3;
+            border-color: #c69c3a;
+            box-shadow: 0 0 15px #e6bc6b;
+            transform: scale(1.02);
+        }
+        .spin-btn {
+            background: #6b4c2c;
+            border: none;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            margin: 15px 0;
+        }
+        .case-keys-info {
+            font-size: 1.2rem;
+            margin: 8px 0;
+            font-weight: bold;
+        }
+        .gods-grid, .titles-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        .god-card, .title-card {
+            background: rgba(255, 250, 235, 0.95);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            width: 170px;
+            text-align: center;
+            border: 1px solid #d6bc80;
+            transition: 0.2s;
+        }
+        .title-card .title-preview {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #5e3a1a;
+        }
+        .btn-buy {
+            background: #d4a259;
+            border: none;
+            padding: 6px;
+            width: 100%;
+            border-radius: 48px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 8px;
+            color: white;
+        }
+        .admin-panel {
+            background: #f0ebdd;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-top: 2rem;
+            border: 1px solid #cfbc8a;
+        }
+        .generated-keys, .promo-list {
+            background: #fff8ec;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+        .promo-item {
+            background: #fff2df;
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .promo-expired { opacity: 0.5; background: #e6d8c0; }
+        .promo-expiring { border-left: 4px solid #ff9800; }
+        .promo-code { font-weight: bold; font-family: monospace; }
+        .promo-delete {
+            background: #a5532b;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: white;
+        }
+        .promo-section {
+            background: #f5efdf;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .promo-input {
+            background: white;
+            border: 1px solid #c7aa6a;
+            padding: 8px 16px;
+            border-radius: 48px;
+            width: 250px;
+        }
+        .custom-title-section {
+            background: #fff8ec;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #8a764a;
+        }
+        @media (max-width: 700px) {
+            .reward-item { width: 85px; font-size: 0.7rem; }
+            .god-card, .title-card { width: 145px; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>✦ ПАНТЕОН ДРЕВНИХ ✦</h1>
+    <p>кейсы, донаты, титулы — выбери свой путь</p>
+</div>
+
+<div class="nav-bar">
+    <button class="nav-btn active" data-section="case">🎲 КЕЙСЫ</button>
+    <button class="nav-btn" data-section="donate">💰 ДОНАТЫ</button>
+    <button class="nav-btn" data-section="titles">🏷️ ТИТУЛЫ</button>
+</div>
+
+<!-- РАЗДЕЛ КЕЙСЫ -->
+<div id="caseSection" class="section active">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div class="promo-section">
+            <input type="text" id="promoCodeInput" class="promo-input" placeholder="Промокод">
+            <button id="activatePromoBtn" class="btn-buy" style="background:#6b4c2c; width: auto; padding: 8px 24px;">Активировать</button>
+        </div>
+        <div class="shulker-bg" style="text-align: center; margin-bottom: 2rem;">
+            <h2>🏆 КОЛЕСО ДОНАТ-КЕЙСА 🏆</h2>
+            <div class="case-keys-info">⚜️ Ключей: <strong id="caseKeysCount">0</strong></div>
+            <div class="roulette-wheel" id="rouletteWheel"></div>
+            <button id="spinRouletteBtn" class="spin-btn">🎲 ЗАКРУТИТЬ КОЛЕСО (1 ключ) 🎲</button>
+            <div id="rouletteResult" style="margin-top: 16px; background: #fff8ec; border-radius: 2rem; padding: 12px;">✨ Нажми на колесо ✨</div>
+        </div>
+
+        <div class="shulker-bg" style="text-align: center;">
+            <h2>🏷️ КЕЙС ТИТУЛОВ 🏷️</h2>
+            <div class="case-keys-info">🎫 Билетов: <strong id="ticketKeysCount">0</strong></div>
+            <div class="roulette-wheel" id="titleRouletteWheel"></div>
+            <button id="spinTitleBtn" class="spin-btn">🎲 ОТКРЫТЬ КЕЙС ТИТУЛОВ (1 билет) 🎲</button>
+            <div id="titleResult" style="margin-top: 16px; background: #fff8ec; border-radius: 2rem; padding: 12px;">✨ Твой титул появится здесь ✨</div>
+        </div>
+    </div>
+</div>
+
+<!-- РАЗДЕЛ ДОНАТЫ -->
+<div id="donateSection" class="section">
+    <div class="shulker-bg" style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="text-align: center;">💰 ДРЕВНИЕ ДАРЫ</h2>
+        <div class="gods-grid" id="donatesGrid"></div>
+    </div>
+</div>
+
+<!-- РАЗДЕЛ ТИТУЛЫ -->
+<div id="titlesSection" class="section">
+    <div class="shulker-bg" style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="text-align: center;">🏷️ ДОСТУПНЫЕ ТИТУЛЫ</h2>
+        <div class="titles-grid" id="titlesShopGrid"></div>
+        <div class="custom-title-section">
+            <h3>✨ КАСТОМНЫЙ ТИТУЛ ✨</h3>
+            <input type="text" id="customTitleInput" placeholder="Введите желаемый титул (до 20 символов)" style="padding: 8px 16px; border-radius: 60px; border: 1px solid #c7aa6a; width: 260px;">
+            <button id="buyCustomTitleBtn" class="btn-buy" style="background:#6b4c2c; margin-left: 10px;">КУПИТЬ ЗА 30₽</button>
+            <div style="font-size:0.75rem; margin-top: 8px;">⚠️ Титул проверится на оскорбления</div>
+        </div>
+    </div>
+</div>
+
+<!-- АДМИН-ПАНЕЛЬ -->
+<div style="max-width: 1000px; margin: 20px auto 0; padding: 0 1rem;">
+    <div class="admin-panel" id="adminPanel">
+        <h3>⎊ АДМИН-ПАНЕЛЬ ⎊</h3>
+        <div id="adminLoginBlock">
+            <input type="password" id="adminPasswordInput" placeholder="Пароль администратора" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px;">
+            <button id="adminLoginBtn" class="btn-buy" style="background:#6b4c2c; width: auto; padding: 6px 18px;">ВОЙТИ</button>
+        </div>
+        <div id="adminTools" style="display: none;">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                <input type="number" id="keyAmount" value="1" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px; width: 100px;">
+                <button id="generateKeysBtn" class="btn-buy" style="background:#6b4c2c;">➕ КЛЮЧИ ДК</button>
+                <button id="generateTicketBtn" class="btn-buy" style="background:#6b4c2c;">🎫 БИЛЕТЫ ТИТУЛОВ</button>
+                <button id="clearKeysBtn" class="btn-buy" style="background:#8a6a3a;">ОЧИСТИТЬ КЛЮЧИ</button>
+            </div>
+            <div id="generatedKeysList" class="generated-keys"></div>
+
+            <h4 style="margin-top: 1rem;">🎁 УПРАВЛЕНИЕ ПРОМОКОДАМИ</h4>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0;">
+                <input type="text" id="newPromoCode" placeholder="Код промокода" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px;">
+                <input type="number" id="promoKeys" value="1" placeholder="Ключей" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px; width: 90px;">
+                <input type="number" id="promoHours" placeholder="Часов жизни (0 = вечный)" value="24" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px; width: 130px;">
+                <input type="number" id="promoMaxUses" placeholder="Макс. использований" value="1" style="background:white; border:1px solid #c7aa6a; padding:6px 12px; border-radius:48px; width: 140px;">
+                <button id="createPromoBtn" class="btn-buy" style="background:#6b4c2c;">СОЗДАТЬ ПРОМОКОД</button>
+            </div>
+            <div id="promoList" class="promo-list"></div>
+            <div id="adminMsg" style="font-size:0.8rem; margin-top: 10px;"></div>
+        </div>
+    </div>
+</div>
+<footer>Пантеон Древних | По вопросам в поддержку</footer>
+
+<script>
+    // ---------- НАСТРОЙКИ ----------
+    const ADMIN_PASSWORD = "4355516";   // ИЗМЕНИТЕ НА СВОЙ ПАРОЛЬ
+
+    // ---------- НАГРАДЫ ОБЫЧНОГО КЕЙСА ----------
+    const rewards = [
+        { name: "Оруженосец", price: 10, weight: 45, icon: "🛡️", chance: 0 },
+        { name: "Странник", price: 30, weight: 30, icon: "🧭", chance: 0 },
+        { name: "Мудрец", price: 50, weight: 22, icon: "📜", chance: 0 },
+        { name: "Жрец", price: 80, weight: 16, icon: "🏺", chance: 0 },
+        { name: "Рыцарь", price: 120, weight: 12, icon: "⚔️", chance: 0 },
+        { name: "Барон", price: 170, weight: 8, icon: "🐉", chance: 0 },
+        { name: "Граф", price: 250, weight: 5, icon: "👑", chance: 0 },
+        { name: "Князь", price: 400, weight: 3, icon: "🌙", chance: 0 },
+        { name: "Лорд", price: 600, weight: 2, icon: "✨", chance: 0 },
+        { name: "Король", price: 1000, weight: 1, icon: "🏛️", chance: 0 }
+    ];
+    const totalWeight = rewards.reduce((s, r) => s + r.weight, 0);
+    rewards.forEach(r => r.chance = (r.weight / totalWeight * 100).toFixed(1));
+
+    const titleRewards = [
+        { name: "Амням", color: "green", display: "<span style='color:#2e7d32'>Амням</span>" },
+        { name: "#otpor", color: "darkred", display: "<span style='color:#8b0000'>#otpor</span>" },
+        { name: "GAZAN", color: "blue", display: "<span style='color:#1e88e5'>GAZAN</span>" },
+        { name: "0_0", color: "gray", display: "<span style='color:#555; text-shadow:1px 1px 0 #ccc'>0_0</span>" },
+        { name: "traper", color: "black", display: "<span style='color:#111'>traper</span>" },
+        { name: "BRO9I", color: "orangered", display: "<span style='color:#ff5722'>BRO9I</span>" }
+    ];
+    titleRewards.forEach(t => t.weight = 1);
+
+    // ---------- ДАННЫЕ ----------
+    let currentUser = null;
+    let animationInterval = null, titleAnimInterval = null;
+    let isSpinning = false, isTitleSpinning = false;
+    let isAdminLoggedIn = false;
+
+    let users = JSON.parse(localStorage.getItem("medieval_users")) || {};
+    let generatedKeys = JSON.parse(localStorage.getItem("generated_keys")) || [];
+    let usedPromoCodes = JSON.parse(localStorage.getItem("used_promocodes")) || {};
+
+    // Промокоды (расширенные)
+    let promoList = JSON.parse(localStorage.getItem("promo_list")) || [];
+
+    const presetUsers = {
+        "priblatnen": { password: "priblatnen123", isAdmin: false, caseKeys: 1, titleKeys: 1 },
+        "sugarwhite": { password: "sugarwhite123", isAdmin: false, caseKeys: 1, titleKeys: 1 },
+        "U1traP1g": { password: "U1traP1g123", isAdmin: false, caseKeys: 1, titleKeys: 1 }
+    };
+    for (let [nick, data] of Object.entries(presetUsers)) if (!users[nick]) users[nick] = data;
+    localStorage.setItem("medieval_users", JSON.stringify(users));
+
+    function saveUsers() { localStorage.setItem("medieval_users", JSON.stringify(users)); }
+    function saveGeneratedKeys() { localStorage.setItem("generated_keys", JSON.stringify(generatedKeys)); renderGeneratedKeys(); }
+    function saveUsedPromoCodes() { localStorage.setItem("used_promocodes", JSON.stringify(usedPromoCodes)); }
+    function savePromoList() { localStorage.setItem("promo_list", JSON.stringify(promoList)); renderPromoList(); }
+
+    function renderGeneratedKeys() {
+        const container = document.getElementById("generatedKeysList");
+        if (!container) return;
+        if (!generatedKeys.length) { container.innerHTML = "<div>Нет сгенерированных ключей</div>"; return; }
+        container.innerHTML = generatedKeys.map(k => `<div style="background:#fff2df; margin:6px 0; padding:8px; border-radius:30px; display:flex; justify-content:space-between;"><span>${k.type === 'title' ? '🎫' : '🗝️'} Ключ: <code>${k.code}</code></span><span>${k.type === 'title' ? '🎫 1 билет титулов' : `🎁 ${k.keys} ключей ДК`}</span></div>`).join('');
+    }
+
+    function renderPromoList() {
+        const container = document.getElementById("promoList");
+        if (!container) return;
+        const now = Date.now();
+        if (!promoList.length) { container.innerHTML = "<div>Нет активных промокодов</div>"; return; }
+        container.innerHTML = promoList.map((p, idx) => {
+            let expired = p.expiresAt && p.expiresAt < now;
+            let expiringSoon = p.expiresAt && p.expiresAt < now + 3600000 && !expired;
+            let usesLeft = p.maxUses - (p.usedCount || 0);
+            let status = '';
+            if (expired) status = ' (ПРОСРОЧЕН)';
+            else if (expiringSoon) status = ' (СКОРО ИСТЕЧЁТ)';
+            let rowClass = 'promo-item';
+            if (expired) rowClass += ' promo-expired';
+            if (expiringSoon && !expired) rowClass += ' promo-expiring';
+            return `<div class="${rowClass}">
+                        <div><span class="promo-code">${p.code}</span> — ${p.keys} ключей | Осталось использований: ${usesLeft} | ${p.expiresAt ? `До: ${new Date(p.expiresAt).toLocaleString()}` : 'Бессрочный'} ${status}</div>
+                        <button class="promo-delete" data-idx="${idx}">УДАЛИТЬ</button>
+                    </div>`;
+        }).join('');
+        document.querySelectorAll(".promo-delete").forEach(btn => {
+            btn.onclick = () => { promoList.splice(parseInt(btn.dataset.idx), 1); savePromoList(); };
+        });
+    }
+
+    function createPromo(code, keys, hours, maxUses) {
+        if (!code.trim()) return "Введите код";
+        if (promoList.some(p => p.code === code.trim())) return "Промокод уже существует";
+        const expiresAt = hours > 0 ? Date.now() + hours * 3600000 : null;
+        promoList.push({ code: code.trim(), keys: parseInt(keys), maxUses: parseInt(maxUses), usedCount: 0, expiresAt });
+        savePromoList();
+        return `Промокод ${code} создан на ${keys} ключей, макс. использований: ${maxUses}, срок: ${hours > 0 ? hours + ' ч.' : 'бессрочно'}`;
+    }
+
+    function activatePromoCode(code) {
+        if (!currentUser) return "Сначала войдите";
+        const promo = promoList.find(p => p.code === code);
+        if (!promo) return "Промокод не найден";
+        if (promo.expiresAt && promo.expiresAt < Date.now()) return "Промокод истёк";
+        if (promo.usedCount >= promo.maxUses) return "Промокод уже использован максимальное число раз";
+        if (usedPromoCodes[currentUser.nick]?.includes(promo.code)) return "Вы уже активировали этот промокод";
+        
+        addCaseKeys(currentUser.nick, promo.keys);
+        promo.usedCount++;
+        usedPromoCodes[currentUser.nick] = usedPromoCodes[currentUser.nick] || [];
+        usedPromoCodes[currentUser.nick].push(promo.code);
+        savePromoList();
+        saveUsedPromoCodes();
+        return `🎉 +${promo.keys} ключей!`;
+    }
+
+    function generateKey(amount, type = 'dk') {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+        let code = '';
+        for (let i = 0; i < 12; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+        generatedKeys.unshift({ code, keys: amount, type, createdAt: Date.now() });
+        saveGeneratedKeys();
+        document.getElementById("adminMsg").innerHTML = `✅ Сгенерирован ${type === 'title' ? 'билет титулов' : 'ключ ДК'}: ${code}`;
+    }
+
+    function activateKey(code) {
+        const idx = generatedKeys.findIndex(k => k.code === code);
+        if (idx === -1) return { success: false, msg: "Ключ не найден" };
+        const key = generatedKeys[idx];
+        generatedKeys.splice(idx, 1);
+        saveGeneratedKeys();
+        return { success: true, keys: key.keys, type: key.type };
+    }
+
+    function enterUser(nick, pass) {
+        const isAdmin = (pass === ADMIN_PASSWORD);
+        if (users[nick]) {
+            if (users[nick].password === pass || isAdmin) {
+                let ud = { ...users[nick] };
+                if (isAdmin && !ud.isAdmin) { ud.isAdmin = true; ud.caseKeys = 999; ud.titleKeys = 999; users[nick] = ud; saveUsers(); }
+                return { success: true, user: { nick, ...ud, isAdmin: ud.isAdmin || isAdmin } };
+            } else return { success: false, msg: "Неверный пароль" };
+        } else {
+            users[nick] = { password: pass, isAdmin, caseKeys: isAdmin ? 999 : 1, titleKeys: isAdmin ? 999 : 1 };
+            saveUsers();
+            return { success: true, user: { nick, ...users[nick] } };
+        }
+    }
+
+    function updateUserResource(nick, key, delta) {
+        if (users[nick]) { users[nick][key] = (users[nick][key] || 0) + delta; saveUsers(); if (currentUser?.nick === nick) { currentUser[key] = users[nick][key]; document.getElementById(key === 'caseKeys' ? 'caseKeysCount' : 'ticketKeysCount').innerText = currentUser[key]; } } }
+    function addCaseKeys(nick, amount) { updateUserResource(nick, 'caseKeys', amount); }
+    function addTitleKeys(nick, amount) { updateUserResource(nick, 'titleKeys', amount); }
+
+    function getRandomReward() {
+        let r = Math.random() * totalWeight, acc = 0;
+        for (let rw of rewards) { acc += rw.weight; if (r <= acc) return rw; }
+        return rewards[0];
+    }
+    function getRandomTitle() { return titleRewards[Math.floor(Math.random() * titleRewards.length)]; }
+
+    function renderRoulette() {
+        const wheel = document.getElementById("rouletteWheel");
+        if (!wheel) return;
+        wheel.innerHTML = "";
+        rewards.forEach((r, idx) => {
+            const div = document.createElement("div"); div.className = "reward-item";
+            div.setAttribute("data-index", idx);
+            div.innerHTML = `<div>${r.icon}</div><div><b>${r.name}</b></div><div>${r.price}₽</div><div style="font-size:0.65rem;">🎲 ${r.chance}%</div>`;
+            wheel.appendChild(div);
+        });
+    }
+    function renderTitleRoulette() {
+        const wheel = document.getElementById("titleRouletteWheel");
+        if (!wheel) return;
+        wheel.innerHTML = "";
+        titleRewards.forEach((t, idx) => {
+            const div = document.createElement("div"); div.className = "reward-item";
+            div.setAttribute("data-idx", idx);
+            div.innerHTML = `<div style="font-size:1.8rem;">🏷️</div><div>${t.display}</div>`;
+            wheel.appendChild(div);
+        });
+    }
+    function highlightIndex(index, wheelId) {
+        const items = document.querySelectorAll(`#${wheelId} .reward-item`);
+        items.forEach(el => el.classList.remove("active-highlight"));
+        if (items[index]) items[index].classList.add("active-highlight");
+    }
+    function showResultPopup(title, isTitle = true) {
+        const popup = document.createElement("div");
+        popup.style.position = "fixed"; popup.style.top = "50%"; popup.style.left = "50%"; popup.style.transform = "translate(-50%,-50%)";
+        popup.style.background = "#fffef0"; popup.style.border = "3px solid #c69c3a"; popup.style.borderRadius = "2rem"; popup.style.padding = "2rem";
+        popup.style.zIndex = "2000"; popup.style.textAlign = "center"; popup.style.minWidth = "280px";
+        popup.innerHTML = `<div style="font-size:2rem;">🏷️</div><div style="font-size:1.5rem;">${title.display || title}</div><div style="margin-top:12px;">Титул добавлен!</div><button id="closePopup" style="margin-top:20px; background:#6b4c2c; border:none; padding:8px 24px; border-radius:60px; cursor:pointer;">ПРИНЯТЬ</button>`;
+        document.body.appendChild(popup);
+        document.getElementById("closePopup").onclick = () => popup.remove();
+    }
+    function startSpin() {
+        if (isSpinning) return;
+        if (!currentUser) { alert("Войдите"); return; }
+        if (currentUser.caseKeys < 1) {
+            let key = prompt("Нет ключей! Введите ключ ДК:");
+            if (key) { let res = activateKey(key); if (res.success && res.type !== 'title') { addCaseKeys(currentUser.nick, res.keys); alert(`✅ +${res.keys} ключей!`); } else if (res.success && res.type === 'title') { addTitleKeys(currentUser.nick, 1); alert(`✅ +1 билет титулов!`); } else alert(res.msg); }
+            return;
+        }
+        const final = getRandomReward();
+        const finalIdx = rewards.findIndex(r => r.name === final.name);
+        isSpinning = true;
+        const spinBtn = document.getElementById("spinRouletteBtn");
+        spinBtn.disabled = true;
+        let speed = 70, steps = 0, totalSteps = Math.floor(Math.random() * 25 + 30), pos = Math.floor(Math.random() * rewards.length);
+        function step() {
+            if (steps >= totalSteps) {
+                clearInterval(animationInterval);
+                highlightIndex(finalIdx, "rouletteWheel");
+                updateUserResource(currentUser.nick, 'caseKeys', -1);
+                document.getElementById("caseKeysCount").innerText = currentUser.caseKeys;
+                showResultPopup({ display: `${final.icon} ${final.name} (${final.price}₽)` }, false);
+                document.getElementById("rouletteResult").innerHTML = `🏅 ВЫПАЛ: ${final.icon} ${final.name} (${final.price}₽)<br>🎲 Шанс ${final.chance}%<br>Напиши в поддержку!`;
+                isSpinning = false;
+                spinBtn.disabled = false;
+                return;
+            }
+            pos = (pos + 1) % rewards.length;
+            highlightIndex(pos, "rouletteWheel");
+            steps++;
+            if (steps > totalSteps - 12) { clearInterval(animationInterval); speed = Math.min(250, speed + 18); animationInterval = setInterval(step, speed); }
+        }
+        animationInterval = setInterval(step, speed);
+    }
+    function startTitleSpin() {
+        if (isTitleSpinning) return;
+        if (!currentUser) { alert("Войдите"); return; }
+        if (currentUser.titleKeys < 1) {
+            let key = prompt("Нет билетов! Введите ключ титулов:");
+            if (key) { let res = activateKey(key); if (res.success && res.type === 'title') { addTitleKeys(currentUser.nick, 1); alert(`✅ +1 билет титулов!`); } else if (res.success) { addCaseKeys(currentUser.nick, res.keys); alert(`✅ +${res.keys} ключей ДК`); } else alert(res.msg); }
+            return;
+        }
+        const final = getRandomTitle();
+        const finalIdx = titleRewards.findIndex(t => t.name === final.name);
+        isTitleSpinning = true;
+        const spinBtn = document.getElementById("spinTitleBtn");
+        spinBtn.disabled = true;
+        let speed = 70, steps = 0, totalSteps = Math.floor(Math.random() * 25 + 30), pos = Math.floor(Math.random() * titleRewards.length);
+        function step() {
+            if (steps >= totalSteps) {
+                clearInterval(titleAnimInterval);
+                highlightIndex(finalIdx, "titleRouletteWheel");
+                updateUserResource(currentUser.nick, 'titleKeys', -1);
+                document.getElementById("ticketKeysCount").innerText = currentUser.titleKeys;
+                showResultPopup(final, true);
+                document.getElementById("titleResult").innerHTML = `🏷️ ВЫПАЛ ТИТУЛ: ${final.display}<br>Поздравляем!`;
+                isTitleSpinning = false;
+                spinBtn.disabled = false;
+                return;
+            }
+            pos = (pos + 1) % titleRewards.length;
+            highlightIndex(pos, "titleRouletteWheel");
+            steps++;
+            if (steps > totalSteps - 12) { clearInterval(titleAnimInterval); speed = Math.min(250, speed + 18); titleAnimInterval = setInterval(step, speed); }
+        }
+        titleAnimInterval = setInterval(step, speed);
+    }
+
+    function renderDonates() {
+        const donates = [
+            { name: "Оруженосец", price: 10, icon: "🛡️" }, { name: "Странник", price: 30, icon: "🧭" }, { name: "Мудрец", price: 50, icon: "📜" },
+            { name: "Жрец", price: 80, icon: "🏺" }, { name: "Рыцарь", price: 120, icon: "⚔️" }, { name: "Барон", price: 170, icon: "🐉" },
+            { name: "Граф", price: 250, icon: "👑" }, { name: "Князь", price: 400, icon: "🌙" }, { name: "Лорд", price: 600, icon: "✨" }, { name: "Король", price: 1000, icon: "🏛️" }
+        ];
+        const grid = document.getElementById("donatesGrid");
+        if (grid) {
+            grid.innerHTML = "";
+            donates.forEach(d => {
+                const card = document.createElement("div"); card.className = "god-card";
+                card.innerHTML = `<div class="god-icon">${d.icon}</div><div class="god-name">${d.name}</div><div class="price">${d.price} ₽</div><button class="btn-buy" data-god="${d.name}">КУПИТЬ</button>`;
+                grid.appendChild(card);
+            });
+            document.querySelectorAll(".btn-buy[data-god]").forEach(btn => btn.onclick = () => window.open("https://funpay.com/users/14796922/", "_blank"));
+        }
+    }
+    function renderTitlesShop() {
+        const shopTitles = [
+            { name: "Амням", price: 10, color: "green" }, { name: "#otpor", price: 10, color: "darkred" }, { name: "GAZAN", price: 10, color: "blue" },
+            { name: "0_0", price: 10, color: "gray" }, { name: "traper", price: 15, color: "black" }, { name: "BRO9I", price: 15, color: "orangered" }
+        ];
+        const grid = document.getElementById("titlesShopGrid");
+        if (grid) {
+            grid.innerHTML = "";
+            shopTitles.forEach(t => {
+                const card = document.createElement("div"); card.className = "title-card";
+                card.innerHTML = `<div class="title-preview" style="color:${t.color}">${t.name}</div><div class="price">${t.price} ₽</div><button class="btn-buy buy-title-shop" data-title="${t.name}">КУПИТЬ</button>`;
+                grid.appendChild(card);
+            });
+            document.querySelectorAll(".buy-title-shop").forEach(btn => btn.onclick = () => window.open("https://funpay.com/users/14796922/", "_blank"));
+        }
+    }
+    function isProfane(text) {
+        const badWords = ["хуй", "пизда", "бля", "еба", "мудак", "гандон", "сука", "пидор", "лох", "редиска", "дурак", "идиот", "дебил", "уебок", "нахуй", "пиздец", "залупа", "шлюха", "блядина", "хуесос"];
+        const lower = text.toLowerCase();
+        return badWords.some(bw => lower.includes(bw));
+    }
+
+    document.getElementById("buyCustomTitleBtn")?.addEventListener("click", () => {
+        const custom = document.getElementById("customTitleInput").value.trim();
+        if (!custom) { alert("Введите титул"); return; }
+        if (custom.length > 25) { alert("Максимум 25 символов"); return; }
+        if (isProfane(custom)) { alert("❌ Титул содержит оскорбления"); return; }
+        window.open("https://funpay.com/users/14796922/", "_blank");
+        alert(`✅ Кастомный титул "${custom}" (30₽). После оплаты напишите в поддержку.`);
+    });
+
+    // Модалка входа
+    const authHtml = `<div id="authModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; display:flex; align-items:center; justify-content:center;"><div style="background:#fffcf0; border-radius:2rem; padding:2rem; width:360px; text-align:center;"><h2>✦ ВХОД ✦</h2><input type="text" id="authNick" placeholder="Ник" style="width:100%; margin:8px 0; padding:10px; border-radius:60px; border:1px solid #c7aa6a;"><br><input type="password" id="authPass" placeholder="Пароль" style="width:100%; margin:8px 0; padding:10px; border-radius:60px; border:1px solid #c7aa6a;"><br><button id="enterBtn" style="background:#6b4c2c; color:white; border:none; padding:10px 20px; border-radius:60px; margin-top:10px;">ВОЙТИ</button><div id="authError" style="color:red; margin-top:8px;"></div></div></div>`;
+    document.body.insertAdjacentHTML('afterbegin', authHtml);
+    document.getElementById("enterBtn").onclick = () => {
+        const nick = document.getElementById("authNick").value.trim();
+        const pass = document.getElementById("authPass").value.trim();
+        if (!nick || !pass) { document.getElementById("authError").innerText = "Введите ник и пароль"; return; }
+        const res = enterUser(nick, pass);
+        if (res.success) {
+            currentUser = res.user;
+            document.getElementById("authModal").remove();
+            document.getElementById("caseKeysCount").innerText = currentUser.caseKeys;
+            document.getElementById("ticketKeysCount").innerText = currentUser.titleKeys;
+            renderDonates(); renderTitlesShop();
+        } else { document.getElementById("authError").innerText = res.msg; }
+    };
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById(btn.dataset.section + "Section").classList.add("active");
+        };
+    });
+
+    document.getElementById("adminLoginBtn").onclick = () => {
+        if (document.getElementById("adminPasswordInput").value === ADMIN_PASSWORD) {
+            isAdminLoggedIn = true;
+            document.getElementById("adminLoginBlock").style.display = "none";
+            document.getElementById("adminTools").style.display = "block";
+            renderGeneratedKeys(); renderPromoList();
+        } else alert("Неверный пароль");
+    };
+    document.getElementById("generateKeysBtn").onclick = () => { if (isAdminLoggedIn) generateKey(parseInt(document.getElementById("keyAmount").value) || 1, 'dk'); };
+    document.getElementById("generateTicketBtn").onclick = () => { if (isAdminLoggedIn) generateKey(1, 'title'); };
+    document.getElementById("clearKeysBtn").onclick = () => { if (isAdminLoggedIn) { generatedKeys = []; saveGeneratedKeys(); } };
+    document.getElementById("createPromoBtn").onclick = () => {
+        if (!isAdminLoggedIn) return;
+        const code = document.getElementById("newPromoCode").value.trim();
+        const keys = parseInt(document.getElementById("promoKeys").value);
+        const hours = parseInt(document.getElementById("promoHours").value);
+        const maxUses = parseInt(document.getElementById("promoMaxUses").value);
+        if (!code) { alert("Введите код промокода"); return; }
+        const msg = createPromo(code, keys, hours, maxUses);
+        document.getElementById("adminMsg").innerHTML = msg;
+        document.getElementById("newPromoCode").value = "";
+    };
+    document.getElementById("activatePromoBtn").onclick = () => {
+        const code = document.getElementById("promoCodeInput").value.trim();
+        if (!code) { alert("Введите промокод"); return; }
+        const result = activatePromoCode(code);
+        alert(result);
+        document.getElementById("promoCodeInput").value = "";
+    };
+    document.getElementById("spinRouletteBtn").onclick = startSpin;
+    document.getElementById("spinTitleBtn").onclick = startTitleSpin;
+
+    renderRoulette(); renderTitleRoulette(); renderGeneratedKeys();
+    setInterval(() => { if (isAdminLoggedIn) renderPromoList(); }, 60000);
+    function createSnow() {
+        const snow = document.createElement('div');
+        snow.classList.add('snowflake');
+        snow.innerHTML = '❄️';
+        snow.style.left = Math.random() * window.innerWidth + 'px';
+        snow.style.fontSize = (Math.random() * 16 + 10) + 'px';
+        snow.style.animationDuration = (Math.random() * 5 + 3) + 's';
+        snow.style.opacity = Math.random() * 0.6 + 0.2;
+        document.body.appendChild(snow);
+        setTimeout(() => snow.remove(), 8000);
+    }
+    setInterval(createSnow, 400);
+</script>
+</body>
+</html>
